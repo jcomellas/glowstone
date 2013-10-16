@@ -1,0 +1,15 @@
+%% -*- mode: Erlang; fill-column: 75; comment-column: 50; -*-
+{application, glowstone,
+ [{description, "Glowstone helps shed light on your Minecraft server!"},
+  {vsn, "0.1.0"},
+  {modules, []},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  sasl,
+                  lager
+                 ]},
+  {mod, {glowstone_app, []}},
+  {env, []}]
+}.
