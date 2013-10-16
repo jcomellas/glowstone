@@ -272,7 +272,7 @@ handshake(State) ->
         {ok, <<?PACKET_TYPE_CHALLENGE, _ClientId:4/binary, Rest/binary>>}  ->
             %% the challenge token comes back as a NULL-terminated string that represents
             %% the integer we want, so we have to convert it to the actual 32 bit integer.
-            SessionId = bin2int(binary_part(Rest, 0, byte_size(Rest) - 1)),
+            SessionId = binary_to_integer(binary_part(Rest, 0, byte_size(Rest) - 1)),
             lager:debug("Received session ID ~w from ~s:~w~n",
                         [SessionId, State#state.host, State#state.port]),
             {ok, SessionId};
@@ -310,8 +310,8 @@ refresh_internal(State) ->
                                      version      = proplists:get_value(version, Packet),
                                      plugins      = re:split(Plugins, State#state.plugins_split_regex),
                                      map_name     = proplists:get_value(map_name, Packet),
-                                     num_players  = bin2int(proplists:get_value(num_players, Packet)),
-                                     max_players  = bin2int(proplists:get_value(max_players, Packet)),
+                                     num_players  = binary_to_integer(proplists:get_value(num_players, Packet)),
+                                     max_players  = binary_to_integer(proplists:get_value(max_players, Packet)),
                                      players      = proplists:get_value(players, Packet),
                                      last_update  = calendar:universal_time()
                                     }}};
@@ -389,7 +389,7 @@ decode_status_packet(Buffer) ->
 num_players_from_status(Packet) ->
     case lists:keyfind(num_players, 1, Packet) of
         {num_players, NumPlayers} when is_binary(NumPlayers) ->
-            bin2int(NumPlayers);
+            binary_to_integer(NumPlayers);
         false ->
             0
     end.
@@ -495,8 +495,3 @@ decode_array(Type, Count, Buffer, Acc) when Count > 0 ->
     end;
 decode_array(_Type, _Count, Buffer, Acc) ->
     {ok, {lists:reverse(Acc), Buffer}}.
-
-
--spec bin2int(binary()) -> integer().
-bin2int(Bin) ->
-    list_to_integer(binary_to_list(Bin)).
